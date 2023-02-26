@@ -1,0 +1,283 @@
+\chapter{Задания}
+
+\section{Написать функцию, которая принимает целое число и возвращает первое четное число, не меньшее аргумента}
+
+\begin{lstlisting}
+(defun first-even-ge (arg)
+  (if (evenp arg) arg (+ arg 1)))
+\end{lstlisting}
+
+\section{Написать функцию, которая принимает число и возвращает число того же знака, но с модулем на 1 больше модуля аргумента}
+
+\begin{lstlisting}
+(defun module-plus (arg)
+  (+ arg (if (> arg 0) 1 -1)))
+\end{lstlisting}
+
+\section{Написать функцию, которая принимает 2 число и возвращает список из этих чисел, расположенный по возрастанию}
+
+\begin{lstlisting}
+(defun growing-lst (a b)
+  (if (< a b) (list a b) (list b a)))
+\end{lstlisting}
+
+\section{Написать функцию, которая принимает 3 числа и возвращает T только тогда, когда первое число расположенно между вторым и третьим}
+
+\begin{lstlisting}
+(defun pred (a b c)
+  (and (> a b) (< a c)))
+\end{lstlisting}
+
+\section{Каков результат вычисления следующих выражений}
+
+\begin{lstlisting}
+(and 'fee 'fie 'foe)
+\end{lstlisting}
+Результат: \texttt{foe}
+
+\begin{lstlisting}
+(or 'fee 'fie 'foe)
+\end{lstlisting}
+Результат: \texttt{fee}
+
+\begin{lstlisting}
+(and (equal 'abc 'abc) 'foe)
+\end{lstlisting}
+Результат: \texttt{foe}
+
+\begin{lstlisting}
+(or Nil 'fie 'foe)
+\end{lstlisting}
+Результат: \texttt{fie}
+
+\begin{lstlisting}
+(and Nil 'fie 'foe)
+\end{lstlisting}
+Результат: \texttt{Nil}
+
+\begin{lstlisting}
+(or (equal 'abc 'abc) 'foe)
+\end{lstlisting}
+Результат: \texttt{T}
+
+\section{Написать предикат, который принимает два числа-аргумента и возвращает T, если первое число не меньше второго}
+
+\begin{lstlisting}
+(defun predicate-2 (a b)
+  (>= a b))
+\end{lstlisting}
+
+\section{Какой из следующих двух вариантов ошибочен и почему?}
+
+1 вариант:
+\begin{lstlisting}
+(defun pred1 (x)
+  (and (numberp x) (plusp x)))
+\end{lstlisting}
+
+2 вариант:
+\begin{lstlisting}
+(defun pred2 (x)
+  (and (plusp x) (numberp x)))
+\end{lstlisting}
+
+\textbf{Ошибочен второй вариант}, потому что функция \texttt{plusp} принимает на вход один аргумент типа \texttt{number} и проверять, является ли аргумент числом, после выполнения функции \texttt{plusp} не имеет смысла, причем аргументы, не являющиеся числами, будут вызывать ошибку, в то время как 1 вариант будет работать с любым аргументом и возвращать \texttt{T} для положительных чисел.
+
+\section{Решить задачу 4, используя для ее решения конструкции \texttt{if}, \texttt{cond}, \texttt{and/or}}
+
+Используя \texttt{if}:
+\begin{lstlisting}
+(defun pred (a b c)
+  (if (> a b) (< a c) Nil))
+\end{lstlisting}
+
+Используя \texttt{cond}:
+\begin{lstlisting}
+(defun pred (a b c)
+  (cond 
+  ((> a b) 
+      (cond ((< a c) T) (T Nil))
+  (T Nil)))
+\end{lstlisting}
+
+Используя \texttt{and/or}:
+\begin{lstlisting}
+(defun pred (a b c)
+  (and (> a b) (< a c)))
+\end{lstlisting}
+
+\section{Переписать функцию how-alike приведенную в лекции и использующую \texttt{cond}, используя конструкции \texttt{if}, \texttt{and/or}}
+
+Используя \texttt{cond}:
+\begin{lstlisting}
+(defun how-alike (x y)
+  (cond ((or(= x y) (equal x y)) 'the_same)
+        ((and (oddp x) (oddp y)) 'both_odd) 
+        ((and (evenp x) (evenp y)) 'both_even) 
+        (t 'diff)))
+\end{lstlisting}
+
+Используя \texttt{if}:
+\begin{lstlisting}
+(defun how-alike-if (x y)
+  (if (or (= x y) (equal x y)) 'the_same
+    (if (and (oddp x) (oddp y)) 'both_odd
+      (if (and (evenp x) (evenp y)) 'both_even
+        'diff))))
+\end{lstlisting}
+
+Используя \texttt{and/or}:
+\begin{lstlisting}
+(defun how-alike-and-or (x y)
+  (or (and (or (= x y) (equal x y)) 'the_same)
+        (and (and (oddp x) (oddp y)) 'both_odd)
+        (and (and (evenp x) (evenp y)) 'both_even) 
+        'diff))
+\end{lstlisting}
+
+
+\chapter{Ответы на вопросы к лабораторной работе}
+
+\section{Классификация функций}
+
+Функции в Lisp классифицируют следующим образом:
+
+\begin{itemize}
+    \item чистые математические функции;
+    \item рекурсивные функции;
+    \item специальные функции --- формы (сегодня 2 аргумента, завтра - 5);
+    \item псевдофункции (создают эффект на внешнем устройстве);
+    \item функции с вариативными значениями, из которых выбирается 1;
+    \item функции высших порядков --- функционал: используется для синтаксического управления программ (абстракция языка).
+\end{itemize}
+
+По назначению функции разделяются следующим образом:
+
+\begin{enumerate}
+    \item конструкторы --- создают значение (\texttt{cons}, например);
+    \item селекторы --- получают доступ по адресу (\texttt{car}, \texttt{cdr});
+    \item предикаты --- возвращают \texttt{Nil}, \texttt{T}.
+\end{enumerate}
+
+\section{Работа функций \texttt{and}, \texttt{or}, \texttt{if}, \texttt{cond}}
+
+\subsection{Функция \texttt{and}}
+
+Синтаксис:
+\begin{lstlisting}
+(and expression-1 expression-2 ... expression-n)
+\end{lstlisting}
+
+Функция возвращает первое expression, результат вычисления которого = \texttt{Nil}. Если все не \texttt{Nil}, то возвращается результат вычисления последнего выражения.
+
+Примеры:
+
+\begin{lstlisting}
+(and 1 Nil 2)
+\end{lstlisting}
+Результат: \texttt{Nil}
+
+\begin{lstlisting}
+(and 1 2 3)
+\end{lstlisting}
+Результат: 3
+
+\subsection{Функция \texttt{or}}
+
+Синтаксис:
+\begin{lstlisting}
+(or expression-1 expression-2 ... expression-n)
+\end{lstlisting}
+
+Функция возвращает первое expression, результат вычисления которого не \texttt{Nil}. Если все \texttt{Nil}, то возвращается \texttt{Nil}.
+
+Примеры:
+
+\begin{lstlisting}
+(or Nil Nil 2)
+\end{lstlisting}
+Результат: 2
+
+\begin{lstlisting}
+(or 1 2 3)
+\end{lstlisting}
+Результат: 1
+
+\subsection{Функция \texttt{if}}
+
+Синтаксис:
+\begin{lstlisting}
+(if condition t-expression f-expression)
+\end{lstlisting}
+
+Если вычисленный предикат не \texttt{Nil}, то выполняется \texttt{t-expression}, иначе - \texttt{f-expression}.
+
+Примеры:
+
+\begin{lstlisting}
+(if Nil 2 3)
+\end{lstlisting}
+Результат: 3
+
+\begin{lstlisting}
+(if 0 2 3)
+\end{lstlisting}
+Результат: 2
+
+\subsection{Функция \texttt{cond}}
+
+Синтаксис:
+\begin{lstlisting}
+(cond 
+  (condition-1 expression-1)
+  (condition-2 expression-2)
+  ...
+  (condition-n expression-n))
+\end{lstlisting}
+
+По порядку вычисляются и проверяются на равенство с \texttt{Nil} предикаты. Для первого предиката, который не равен \texttt{Nil}, вычисляется находящееся с ним в списке выражение и возвращается его значение. Если все предкаты вернут \texttt{Nil}, то и \texttt{cond} вернет \texttt{Nil}.
+
+Примеры:
+
+\begin{lstlisting}
+(cond (Nil 1) (2 3))
+\end{lstlisting}
+Результат: 3
+
+\begin{lstlisting}
+(cond (Nil 1) (Nil 2))
+\end{lstlisting}
+Результат: \texttt{Nil}
+
+\section{Способы определения функций}
+
+\subsection{Через \texttt{defun}}
+
+Синтаксис:
+\begin{lstlisting}
+(defun func-name (list-of-argument) function-body)
+\end{lstlisting}
+
+Пример определения:
+\begin{lstlisting}
+(defun sqr(x) (* x x))
+\end{lstlisting}
+
+Пример вызова:
+\begin{lstlisting}
+(sqr 2)
+\end{lstlisting}
+Результат: 4
+
+\subsection{Через \texttt{lambda}}
+
+Синтаксис:
+\begin{lstlisting}
+(lambda (list-of-arguments) function-body)
+\end{lstlisting}
+
+Пример использования:
+\begin{lstlisting}
+((lambda (x) (* x x)) 2)
+\end{lstlisting}
+Результат: 4

@@ -1,0 +1,203 @@
+\section*{Задание 1}
+
+Написать функцию, которая принимает целое число и возвращает первое четное число, не меньшее аргумента.
+
+\begin{lstinputlisting}[
+	caption={Задание 1},
+	label={lst:t1},
+	style={lsp},
+	linerange={1-4},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 2}
+
+Написать функцию, которая принимает число и возвращает число того же знака, но с модулем на 1 больше модуля аргумента.
+
+\begin{lstinputlisting}[
+	caption={Задание 2},
+	label={lst:t2},
+	style={lsp},
+	linerange={6-9},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 3}
+
+Написать функцию, которая принимает два числа и возвращает список из этих чисел, расположенный по возрастанию.
+
+\begin{lstinputlisting}[
+	caption={Задание 3},
+	label={lst:t3},
+	style={lsp},
+	linerange={11-12},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 4}
+
+Написать функцию, которая принимает три числа и возвращает \texttt{Т} только тогда, когда первое число расположено между вторым и третьим.
+
+\begin{lstinputlisting}[
+	caption={Задание 4},
+	label={lst:t4},
+	style={lsp},
+	linerange={14-17},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 5}
+
+Каков результат вычисления следующих выражений?
+
+\begin{lstinputlisting}[
+	caption={Задание 5},
+	label={lst:t5},
+	style={lsp},
+	linerange={20-25},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 6}
+
+Написать предикат, который принимает два числа аргумента и возвращает \texttt{Т}, если первое число не меньше второго.
+
+\begin{lstinputlisting}[
+	caption={Задание 6},
+	label={lst:t6},
+	style={lsp},
+	linerange={28-31},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 7}
+
+Какой из следующих двух вариантов предикатаошибочен и почему?
+
+\begin{lstinputlisting}[
+	caption={mystery},
+	label={lst:func},
+	style={lsp},
+	linerange={33-37},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+Второй предикат ошибочен, потому что в случае, если на вход функции будет подан аргумент, не являющийся числом, к нему будет примененафункция {\texttt{plusp}}, определяющая, является ли число положительным. Онаопределена только для чисел, поэтому в случае нечислового аргумента интерпретатор выдаст ошибку.
+
+\section*{Задание 8}
+
+Решить задачу 4, используя для ее решения конструкции {\texttt{IF, COND, AND/OR}}.
+
+\begin{lstinputlisting}[
+	caption={Задание 8},
+	label={lst:t8},
+	style={lsp},
+	linerange={39-53},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\section*{Задание 9}
+
+Переписать функцию {\texttt{how-alike}}, приведеннуюв лекции и использующую {\texttt{COND}}, используя конструкции {\texttt{IF, AND/OR}}.
+
+\begin{lstinputlisting}[
+	caption={Задание 9},
+	label={lst:t9},
+	style={lsp},
+	linerange={55-81},
+	]{../src/main.lsp}
+\end{lstinputlisting}
+
+\clearpage
+\section*{Контрольные вопросы}
+
+\subsection*{1. Базис языка {\texttt{Lisp}}}
+
+Базис языка представлен:
+\begin{itemize}
+	\item структурами, атомами;
+	\item функциями:\\
+	{\texttt{atom, eq, cons, car, cdr,}}\\
+	{\texttt{cond, quote, lambda, eval, label}}.
+\end{itemize}
+
+\subsection*{2. Классификация функций языка {\texttt{Lisp}}}
+
+Функции в языке {\texttt{Lisp}}:
+\begin{itemize}
+	\item чистые (с фиксированным количеством аргументов) -- математические функции;
+	\item рекурсивные функции;
+	\item специальные функции -- формы (принимают произвольное количество аргументов или по разному обрабатывают аргументы);
+	\item псевдофункции (создающие <<эффект>> - отображающие на экране процесс обработки данных и т. п.);
+	\item функции с вариативными значениями, выбирающие одно значение;
+	\item функции высших порядков -- функционалы (используются для построения синтаксически управляемых программ).
+\end{itemize}
+
+По назначению функции разделяются следующим образом:
+\begin{enumerate}
+	\item конструкторы --- создают значение (\texttt{cons}, например);
+	\item селекторы --- получают доступ по адресу (\texttt{car}, \texttt{cdr});
+	\item предикаты --- возвращают \texttt{Nil}, \texttt{T}.
+\end{enumerate}
+
+\subsection*{3. Способы создания функций}
+
+С помощью макро определения \texttt{defun} или с использованием Лямбда-нотации (функция без имени).
+
+\subsection*{Работа функций \texttt{and}, \texttt{or}, \texttt{if}, \texttt{cond}}
+
+\subsubsection*{Функция \texttt{and}}
+
+Синтаксис: \code{(and expression-1 expression-2 ... expression-n)}
+
+Функция возвращает первое \texttt{expression}, результат вычисления которого = \texttt{Nil}. Если все не \texttt{Nil}, то возвращается результат вычисления последнего выражения.
+
+Примеры:
+\begin{lstlisting}[style={scheme}]
+(and 1 Nil 2) -> %\texttt{Nil}%
+(and 1 2 3) -> 3
+\end{lstlisting}
+
+\subsubsection*{Функция \texttt{or}}
+
+Синтаксис: \code{(or expression-1 expression-2 ... expression-n)}
+
+Функция возвращает первое \texttt{expression}, результат вычисления которого не \texttt{Nil}. Если все \texttt{Nil}, то возвращается \texttt{Nil}.
+
+Примеры:
+\begin{lstlisting}[style={scheme}]
+(or Nil Nil 2) -> 2
+(or 1 2 3) -> 1
+\end{lstlisting}
+
+\subsubsection*{Функция \texttt{if}}
+
+Синтаксис: \code{(if condition t-expression f-expression)}
+
+Если вычисленный предикат не \texttt{Nil}, то выполняется \texttt{t-expression}, иначе - \texttt{f-expression}.
+
+Примеры:
+\begin{lstlisting}[style={scheme}]
+(if Nil 2 3) -> 3
+(if 0 2 3) -> 2
+\end{lstlisting}
+
+\subsubsection*{Функция \texttt{cond}}
+
+Синтаксис:
+\begin{lstlisting}[style={scheme}]
+(cond
+  (condition-1 expression-1)
+  (condition-2 expression-2)
+  ...
+  (condition-n expression-n))
+\end{lstlisting}
+
+По порядку вычисляются и проверяются на равенство с \texttt{Nil} предикаты. Для первого предиката, который не равен \texttt{Nil}, вычисляется находящееся с ним в списке выражение и возвращается его значение. Если все предикаты вернут \texttt{Nil}, то и \texttt{cond} вернет \texttt{Nil}.
+
+Примеры:
+\begin{lstlisting}[style={scheme}]
+(cond (Nil 1) (2 3)) -> 3
+(cond (Nil 1) (Nil 2)) -> %\texttt{Nil}%
+\end{lstlisting}
+

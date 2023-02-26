@@ -1,0 +1,221 @@
+\chapter{Задания}
+
+\section{Написать функцию, которая по своему аргументу-списку \texttt{lst} определяет, является ли он полиндромом (то есть равны ли \texttt{lst} и \texttt{(reverse lst)})}
+
+\begin{lstlisting}
+(defun polyndromp (lst)
+  (equal lst (reverse lst)))
+\end{lstlisting}
+
+\section{Написать предикат \texttt{set-equal}, который возвращает \texttt{t}, если два его множества-аргумента содержат одни и те же элементы, порядок которых не имеет значения}
+
+\begin{lstlisting}
+(defun set-equal (lst1 lst2) 
+  (and (subsetp lst2 lst1) (subsetp lst1 lst2)))
+\end{lstlisting}
+
+\section{Напишите необходимые функции, которые обрабатывают таблицу из точечных пар: \texttt{(страна . столица)}, и возвращают по стране столицу, а по столице --- страну}
+
+\begin{lstlisting}
+(defun get-cptl (cntry cntry-cptl)
+  (let ((pair (assoc cntry cntry-cptl)))
+    (and pair (cdr pair))))
+
+(defun get-cntry (cptl cntry-cptl)
+  (let ((pair (rassoc cptl cntry-cptl)))
+    (and pair (car pair))))
+\end{lstlisting}
+
+\section{Напишите функцию \texttt{swap-first-last}, которая переставляет в списке аргументе первый и последний элементы}
+
+\subsection{Разрушающая структуру}
+
+\begin{lstlisting}
+(defun nswap-first-last (lst)
+  (let ((el1 (car lst))
+        (last-el (last lst)))
+    (setf (car lst) (car last-el))
+    (setf (car last-el) el1)
+    lst))
+\end{lstlisting}
+
+\subsection{Не разрушающая структуру}
+
+\begin{lstlisting}
+(defun swap-first-last (lst)
+  (let ((el1 (car lst))
+        (last-el (car (last lst))))
+    (reverse (cons el1 
+          (cdr 
+            (reverse 
+              (cons last-el (cdr lst))))))))
+\end{lstlisting}
+
+\section{Напишите функцию \texttt{swap-two-ellement}, которая переставляет в списке-аргументе два указанных своими порядковыми номерами элемента в этом списке}
+
+\section{Разрушающая структуру}
+
+\begin{lstlisting}
+(defun nswap-two-ellement (n1 n2 lst)
+  (let ((len (length lst)))
+    (and (< n1 len) (< n2 len)
+         (let ((el1 (nth n1 lst))
+               (el2 (nth n2 lst)))
+           (setf (nth n1 lst) el2)
+           (setf (nth n2 lst) el1)
+           lst))))
+\end{lstlisting}
+
+\section{Не разрушающая структуру}
+
+\begin{lstlisting}
+(defun swap-two-ellement (n1 n2 lst)
+  (let ((len (length lst))
+        (lst-copy (copy-list lst)))
+    (and (< n1 len) (< n2 len)
+         (let ((el1 (nth n1 lst))
+               (el2 (nth n2 lst)))
+           (setf (nth n1 lst-copy) el2)
+           (setf (nth n2 lst-copy) el1)
+           lst-copy))))
+\end{lstlisting}
+
+\section{Напишите две функции, \texttt{swap-to-left} и \texttt{swap-to-right}, которые производят круговую перестановку в списке-аргументе влево и вправо, соответственно}
+
+\begin{lstlisting}
+(defun swap-to-left (lst)
+  (and lst
+       (let ((tail (cdr lst))
+             (head (car lst)))
+         (reverse (cons head (reverse tail))))))
+
+(defun swap-to-right (lst)
+  (and lst
+       (let ((last-el (car (last lst))))
+         (reverse (cdr (reverse (cons last-el lst)))))))
+\end{lstlisting}
+
+\chapter{Ответы на вопросы к лабораторной работе}
+
+\section{Способы определения функций}
+
+\subsection{Через \texttt{defun}}
+
+Синтаксис:
+\begin{lstlisting}
+(defun func-name (list-of-argument) function-body)
+\end{lstlisting}
+
+Пример определения:
+\begin{lstlisting}
+(defun sqr(x) (* x x))
+\end{lstlisting}
+
+Пример вызова:
+\begin{lstlisting}
+(sqr 2)
+\end{lstlisting}
+Результат: 4
+
+\subsection{Через \texttt{lambda}}
+
+Синтаксис:
+\begin{lstlisting}
+(lambda (list-of-arguments) function-body)
+\end{lstlisting}
+
+Пример использования:
+\begin{lstlisting}
+((lambda (x) (* x x)) 2)
+\end{lstlisting}
+Результат: 4
+
+\section{Варианты и методы модификации списков}
+
+\subsection{Не разрушающие структуру списка функции}
+
+Данные функции не меняют сам объект-аргумент, а создают копию.
+
+\subsubsection{Функция \texttt{append}}
+
+Объединяет списки. Это форма, можно передать больше 2 аргументов. Создает копию для всех аргументов, кроме последнего.
+
+Пример: \texttt{(append '(1 2) '(3 4))} --- \texttt{(1 2 3 4)}.
+
+\subsubsection{Функция \texttt{reverse}}
+
+Возвращает копию исходного списка, элементы которого переставлены в обратном порядке. \textbf{В целях эффективности работает только на верхнем уровне}.
+
+Пример: \texttt{(reverse '(1 2 3 4))} --- \texttt{(4 3 2 1)}.
+
+\subsubsection{Функция \texttt{remove}}
+
+Модифицирует, но работает с копией, поэтому не разрушает. Данная функция удаляет элемент по значению (Часто разрушающая аналогичная функция называется \texttt{delete}). По умолчанию используется \texttt{eql} для сравнения на равенство, но можно передать другую функцию через ключевой параметр \texttt{:test}.
+
+Примеры: 
+\begin{enumerate}
+    \item \texttt{(remove 3 '(1 2 3))} --- \texttt{(1 2)};
+    \item \texttt{(remove '(1 2) '((1 2) (3 4)))} --- \texttt{((1 2) (3 4))};
+    \item \texttt{(remove '(1 2) '((1 2) (3 4)) :test #'equal)} --- \texttt{((3 4))};
+\end{enumerate}
+
+\subsubsection{Функция \texttt{rplaca}}
+
+Переставляет \texttt{car}-указатель на 2 элемент-аргумент (\textit{S}-выражение).
+
+Пример: \texttt{(rplaca '(1 2 3) 3)} --- \texttt{(3 2 3)}.
+
+\subsubsection{Функция \texttt{rplacd}}
+
+Переставляет \texttt{cdr}-указатель на 2 элемент-аргумент (\textit{S}-выражение).
+
+Пример: \texttt{(rplacd '(1 2 3) '(4 5))} --- \texttt{(1 4 5)}.
+
+\subsubsection{Функция \texttt{subst}}
+
+Заменяет все элементы списка, которые равны 2-ому переданному элементу-аргументу на 1-ый элемент-аргумент. \textit{По умолчанию для сравнения используется функция \texttt{eql}}.
+
+Пример: \texttt{(subst 2 1 '(1 2 1 3))} --- \texttt{(2 2 2 3)}.
+
+\subsection{Структуроразрушающие функции}
+
+Данные функции меняют сам объект-аргумент, невозможно вернуться к исходному списку. Чаще всего такие функции начинаются с префикса \texttt{n-}.
+
+\subsubsection{Функция \texttt{nconc}}
+
+Работает аналогично \texttt{append}, только не копирует свои аргументы, а разрушает структуру.
+
+\subsubsection{Функция \texttt{nreverse}}
+
+Работает аналогично \texttt{reverse}, но не создает копии.
+
+\subsubsection{Функция \texttt{nsubst}}
+
+Работае аналогично функции \texttt{nsubst}, но не создает копии.
+
+\section{Отличие в работе функций \texttt{cons}, \texttt{list}, \texttt{append} и в их результате}
+
+Функция \texttt{cons} --- чисто математическая, конструирует списковую ячейку, которая может вовсе и не быть списком (будет списком только в том случае, если 2 аргументом передан список).
+
+Примеры:
+\begin{enumerate}
+    \item \texttt{(cons 2 '(1 2))} --- \texttt{(2 1 2)} --- список;
+    \item \texttt{(cons 2 3)} --- \texttt{(2 . 3)} --- не список.
+\end{enumerate}
+
+Функция \texttt{list} --- форма, принимает произвольное количество аргументов и конструирует из них список. Результат --- всегда список. При нуле аргументов возвращает пустой список.
+
+Примеры:
+\begin{enumerate}
+    \item \texttt{(list 1 2 3)} --- \texttt{(1 2 3)};
+    \item \texttt{(list 2 '(1 2))} --- \texttt{(2 (1 2))};
+    \item \texttt{(list '(1 2) '(3 4))} --- \texttt{((1 2) (3 4))};
+\end{enumerate}
+
+Функция \texttt{append} --- форма, принимает на вход произвольное количество аргументов и для всех аргументов, кроме последнего, создает копию, ссылая при этом последний элемент каждого списка-аргумента на первый элемент следующего по порядку списка-аргумента (так как модифицируются все списки-аргументы, кроме последнего, копирование для последнего не делается в целях эффективности).
+
+Примеры:
+\begin{enumerate}
+    \item \texttt{(append '(1 2) '(3 4))} --- \texttt{(1 2 3 4)};
+    \item \texttt{(append '((1 2) (3 4)) '(5 6))} --- \texttt{((1 2) (3 4) 5 6)}.
+\end{enumerate}

@@ -1,0 +1,412 @@
+
+
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[14pt]{extsizes}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} 
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{eucal}
+\usepackage{enumitem}
+%s\documentclass[openany]{book}
+\frenchspacing
+
+\usepackage{titlesec}
+\titleformat{\section}
+{\normalsize\bfseries}
+{\thesection}
+{1em}{}
+\titlespacing*{\chapter}{0pt}{-30pt}{8pt}
+\titlespacing*{\section}{\parindent}{*4}{*4}
+\titlespacing*{\subsection}{\parindent}{*4}{*4}
+
+\usepackage{indentfirst} % Красная строка
+
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\long\def\comment{}
+\usepackage{amsmath}
+
+\usepackage{amssymb}
+
+% Для листинга кода:
+\lstset{ %
+	language=lisp,                 % выбор языка для подсветки (здесь это С)
+	texcl=true,
+	extendedchars=\true,
+	basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
+	numbers=left,               % где поставить нумерацию строк (слева\справа)
+	numberstyle=\tiny,           % размер шрифта для номеров строк
+	stepnumber=1,                   % размер шага между двумя номерами строк
+	numbersep=5pt,                % как далеко отстоят номера строк от подсвечиваемого кода
+	showspaces=false,            % показывать или нет пробелы специальными отступами
+	showstringspaces=false,      % показывать или нет пробелы в строках
+	showtabs=false,             % показывать или нет табуляцию в строках
+	frame=single,              % рисовать рамку вокруг кода
+	tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
+	captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
+	breaklines=true,           % автоматически переносить строки (да\нет)
+	breakatwhitespace=false, % переносить строки только если есть пробел
+	escapeinside={\#*}{*)},  % если нужно добавить комментарии в коде
+	%inputencoding=utf8x,
+	%extendedchars=\true
+}
+
+
+
+\usepackage[left=2cm,right=2cm, top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
+% Для измененных титулов глав:
+\usepackage{titlesec, blindtext, color} % подключаем нужные пакеты
+\definecolor{gray75}{gray}{0.75} % определяем цвет
+\newcommand{\hsp}{\hspace{20pt}} % длина линии в 20pt
+% titleformat определяет стиль
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+
+% plot
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+
+\begin{document}
+	%\def\chaptername{} % убирает "Глава"
+	\thispagestyle{empty}
+
+
+	
+
+
+
+
+\chapter*{Практические задания}	
+
+\section*{1. Написать функцию, которая по своему списку-аргументу lst определяет, является ли он палиндромом (то есть равны ли lst и (reverse lst)). Списки одноуровневые.}
+
+1. Проверка на равенство исходного списка и инвертированного исходного списка.
+\begin{lstlisting}[language=Lisp]
+(defun is_palindrome (lst) 
+	(equalp lst (reverse lst))
+)
+\end{lstlisting}
+
+2. Проверка на равенство инвертированной первой половины исходного списка и второй половины исходного списка (если список нечетной длины, то центральный элемент не попадает ни в первый, ни во второй список) (этот вариант и было предложено реализовать).
+
+(nthcdr n lst) выполняет для списка lst операцию cdr n раз, и возвращает результат. (floor n) усекает значения по нижней границе. (ceiling n) усекает значения по верхней границе.
+\begin{lstlisting}[language=Lisp]
+(defun first_n_rev (n lst res) 
+	(cond 
+		((or (null lst) (= n 0)) res)
+		(t (first_n_rev (- n 1) (cdr lst) (cons (car lst) res)))
+	)
+)
+
+(defun is_palindrome (lst)
+	(let ((half_len (/ (length lst) 2)))
+		(equalp 
+			(first_n_rev (floor half_len) lst ()) 
+			(nthcdr (ceiling half_len) lst)
+		)
+	)
+)
+\end{lstlisting}
+
+\clearpage
+3. Рекурсивно: сравнить первый и последний элемент исходного списка, первый и последний элемент исходного списка без первого и последнего элемента, и так далее (если длина списка нечетная, то центральный элемент ни с чем не сравнивается).
+
+\begin{lstlisting}[language=Lisp]
+; в данной задаче допустимо возвращать инвертированный список
+(defun list_without_last (lst res)
+	(cond
+		((null (cdr lst)) res)
+		(t (list_without_last (cdr lst) (cons (car lst) res)))
+	)
+)
+
+(defun is_palindrome (lst)
+	(cond 
+		((null (cdr lst)) t)
+		((eql (car lst) (car (last lst))) ;т. к. (last '(1 2))=>(2)
+			(is_palindrome (list_without_last (cdr lst) ())))
+	)
+)
+\end{lstlisting}
+
+
+Все варианты функций проверялись на следующих тестах:
+\begin{lstlisting}[language=Lisp]
+(is_palindrome Nil) => T
+(is_palindrome '(1)) => T
+(is_palindrome '(1 2 3)) => NIL
+(is_palindrome '(1 2 1)) => T
+(is_palindrome '(1 2 3 1)) => NIL
+(is_palindrome '(1 2 2 1)) => T
+\end{lstlisting}
+
+\if 0
+$
+(is_palindrome Nil)
+(is_palindrome '(1))
+(is_palindrome '(1 2 3))
+(is_palindrome '(1 2 1))
+(is_palindrome '(1 2 3 1))
+(is_palindrome '(1 2 2 1))
+$
+\fi
+
+
+
+\clearpage
+\section*{2. Написать предикат set-equal, который возвращает t, если два его множества-аргумента содержат одни и те же элементы, порядок которых не имеет значения}
+
+Все элементы первого множества последовательно удаляются из обоих множеств. Если исходные множества эквиваленты, то в конце получим два пустых множества.
+
+\begin{lstlisting}[language=Lisp]
+(defun set-equal (set1 set2)
+	(cond 
+		((null set1) (null set2)) ;3 тест
+		((null set2) Nil) ;4 тест
+		(t (set-equal (cdr set1) (remove (car set1) set2)))
+	)
+)
+
+(set-equal '(1 2 3) '(1 2 3)) => T
+(set-equal '() '()) => T
+(set-equal '(1 2) '(1 2 3)) => NIL
+(set-equal '(1 2) '(1)) => NIL
+\end{lstlisting}
+
+
+
+
+\section*{3. Напишите свои необходимые функции, которые обрабатывают таблицу из 4-х точечных пар: (страна . столица), и возвращают по стране - столицу, а по столице — страну.}
+
+1. Используя информацию о том, что в таблице ровно 4 точечные пары.
+
+\begin{lstlisting}[language=Lisp]
+(defun find_capital_by_country (table country)
+	(cond
+		((eql (caar table) country) (cdar table))
+		((eql (caadr table) country) (cdadr table))
+		((eql (caaddr table) country) (cdaddr table))
+		((eql (caaddr (cdr table)) country) (cdaddr (cdr table)))
+	)
+)
+
+(defun find_country_by_capital (table capital)
+	(cond
+		((eql (cdar table) capital) (caar table))
+		((eql (cdadr table) capital) (caadr table))
+		((eql (cdaddr table) capital) (caaddr table))
+		((eql (cdaddr (cdr table)) capital) (caaddr (cdr table)))
+	)
+)
+\end{lstlisting}
+
+2. Используя функционал some.
+
+(some \#'test lst1 ... lstn) выполняет действия предиката test над car-элементами списков lst1,...,lstn, затем - над cadr-обьектами каждого  списка и т.д. до тех пор, пока тест не вернет значение, отличное от Nil, или не встретится конец списка. Если тест возвращает значение, отличное от Nil, функция some возвращает это значение, если же конец списка достигнут, функция some возвращает Nil.
+
+\begin{lstlisting}[language=Lisp]
+(defun find_capital_by_country (table country)
+	(some 
+		#'(lambda (row) (cond ((eql (car row) country) (cdr row)))) 
+		table
+	) 
+)
+
+(defun find_country_by_capital (table capital)
+	(some 
+		#'(lambda (row) (cond ((eql (cdr row) capital) (car row)))) 
+		table
+	) 
+)
+\end{lstlisting}
+
+
+3. Используя функции assoc/rassoc.
+
+assoc (rassoc) выбирает из ассоциативного списка, заданного вторым аргументом, первую точечную пару, в которой первый (второй) элемент совпадает со значением первого аргумента. 
+
+\begin{lstlisting}[language=Lisp]
+(defun find_capital_by_country (table country)
+	(cdr (assoc country table))
+)
+
+(defun find_country_by_capital (table capital)
+	(car (rassoc capital table))
+)
+\end{lstlisting}
+
+Все варианты функций проверялись на следующих тестах:
+\begin{lstlisting}[language=Lisp]
+(defvar table)
+(setq table '((Russia . Moscow) (GreatBritain . London)                  (France . Paris) (Italy . Roma)))
+
+(find_capital_by_country table 'Russia) => MOSCOW
+(find_capital_by_country table 'Italy) => ROMA
+(find_capital_by_country table 'USA) => NIL
+
+(find_country_by_capital table 'Moscow) => Russia
+(find_country_by_capital table 'Paris) => FRANCE
+(find_country_by_capital table 'Washington) => NIL
+\end{lstlisting}
+
+\if 0
+$
+(defvar table)
+(setq table '((Russia . Moscow) (GreatBritain . London)                  (France . Paris) (Italy . Roma)))
+(find_capital_by_country table 'Russia)
+(find_capital_by_country table 'Italy)
+(find_capital_by_country table 'USA)
+(find_country_by_capital table 'Moscow)
+(find_country_by_capital table 'Paris)
+(find_country_by_capital table 'Washington)
+$
+\fi
+
+
+
+\clearpage
+\section*{5. Напишите функцию swap-two-element, которая переставляет в списке-аргументе два указанных своими порядковыми номерами элемента в этом списке.}
+
+1. Собирать список из элементов исходного списка в следующем порядке: 
+\begin{itemize}
+	\item элементы, которые стоят до индекса min(index1 index2) (не включительно);
+	\item элемент с индексом max(index1 index2);
+	\item элементы, которые стоят между индексами min(index1 index2) и max(index1 index2) (не включительно);
+	\item элемент с индексом min(index1 index2);
+	\item элементы, которые стоят после индекса max(index1 index2) (не включительно);
+\end{itemize}
+
+
+\begin{lstlisting}[language=Lisp]
+; элемент n не входит в результат
+(defun list_till_n (n lst) 
+	(cond 
+		((or (null lst) (= n 0)) Nil)
+		(t (cons (car lst) (first_n (- n 1) (cdr lst))))
+	)
+)
+
+; элементы to и from не входят в результат
+(defun list_slice_from_to (lst from to)
+	(nthcdr (+ from 1) (list_till_n to lst))
+)
+
+; в этой функции index1 < index2
+(defun swap-two-element-inner (lst index1 index2)
+	(nconc 
+		(list_till_n index1 lst)
+		(cons (nth index2 lst) (list_slice_from_to lst index1 index2))
+		(cons (nth index1 lst) (nthcdr (+ index2 1) lst))	
+	)
+)
+
+
+
+
+
+
+
+(defun swap-two-element (lst index1 index2)
+	(cond 
+		((and (< index1 index2) (< -1 index1) (< index2 (length lst)))
+			(swap-two-element-inner lst index1 index2)
+		)
+		((and (> index1 index2) (< -1 index2) (< index1 (length lst)))
+			(swap-two-element-inner lst index2 index1)
+		)
+		((= index1 index2) lst)
+	)
+)
+\end{lstlisting}
+
+
+
+2. Рекурсивно записывать в конец результирующего списка голову исходного списка, голову хвоста исходного списка и так далее. Если достигли элемента с индексом index1 (index2), то записать вместо головы элемент с индексом index2 (index1). В конце инвертировать результирующий список
+
+(a) Без использования nconc, рекурсивно доходя до конца исходного списка
+\begin{lstlisting}[language=Lisp]
+; в этой функции index1 < index2
+(defun swap-two-element-inner (lst index1 index2 res elem1)
+	(cond 
+		((null lst) (reverse res))
+		((= index1 0) (swap-two-element-inner (cdr lst) (- index1 1) (- index2 1) (cons (nth index2 lst) res) elem1))
+		((= index2 0) (swap-two-element-inner (cdr lst) index1 (- index2 1) (cons elem1 res) elem1))
+		(t (swap-two-element-inner (cdr lst) (- index1 1) (- index2 1) (cons (car lst) res) elem1))
+	)
+)
+
+(defun swap-two-element (lst index1 index2)
+	(cond 
+		((and (< index1 index2) (< -1 index1) (< index2 (length lst)))
+			(swap-two-element-inner lst index1 index2 () (nth index1 lst))
+		)
+		((and (> index1 index2) (< -1 index2) (< index1 (length lst)))
+			(swap-two-element-inner lst index2 index1 () (nth index2 lst))
+		)
+		((= index1 index2) lst)
+	)
+)
+\end{lstlisting}
+\clearpage
+(б) С использованием ncon, рекурсивно доходя только до элемента с индексом index2 (swap-two-element-inner не заменяет элемент с индексом index2  на элемент с индексом index1). 
+
+\begin{lstlisting}[language=Lisp]
+; в этой функции index1 < index2
+(defun swap-two-element-inner (lst index1 index2 res)
+	(cond 
+		((= index2 0) (reverse res))
+		((= index1 0) (swap-two-element-inner (cdr lst) (- index1 1) (- index2 1) (cons (nth index2 lst) res)))
+		(t (swap-two-element-inner (cdr lst) (- index1 1) (- index2 1) (cons (car lst) res)))
+	)
+)
+	
+(defun swap-two-element (lst index1 index2)
+	(cond 
+		((and (< index1 index2) (< -1 index1) (< index2 (length lst)))
+			(nconc (swap-two-element-inner lst index1 index2 ()) (cons (nth index1 lst) (nthcdr (+ index2 1) lst)))
+		)
+		((and (> index1 index2) (< -1 index2) (< index1 (length lst)))
+			(nconc (swap-two-element-inner lst index2 index1 ()) (cons (nth index2 lst) (nthcdr (+ index1 1) lst)))
+		)
+		((= index1 index2) lst)
+	)
+)
+	
+\end{lstlisting}
+
+Все варианты функций проверялись на следующих тестах:
+\begin{lstlisting}[language=Lisp]
+(swap-two-element '(0 1 2 3 4 5 6 7) 2 4) => (0 1 4 3 2 5 6 7)
+(swap-two-element '(0 1 2 3 4 5 6 7) 0 7) => (7 1 2 3 4 5 6 0)
+(swap-two-element '(0 1 2 3 4 5 6 7) -1 2) => Nil
+(swap-two-element '(0 1 2 3 4 5 6 7) 1 8) => Nil
+(swap-two-element '(0 1 2 3 4 5 6 7) 5 3) => (0 1 2 5 4 3 6 7)
+(swap-two-element '(0 1 2 3 4 5 6 7) 3 3) => (0 1 2 3 4 5 6 7)
+\end{lstlisting}
+
+\if 0
+$
+(swap-two-element '(0 1 2 3 4 5 6 7) 2 4)
+(swap-two-element '(0 1 2 3 4 5 6 7) 0 7)
+(swap-two-element '(0 1 2 3 4 5 6 7) 5 3)
+(swap-two-element '(0 1 2 3 4 5 6 7) 3 3)
+(swap-two-element '(0 1 2 3 4 5 6 7) -1 2)
+(swap-two-element '(0 1 2 3 4 5 6 7) 1 8)
+(swap-two-element '(0 1 2 3 4 5 6 7) 0 1)
+$
+\fi
+
+	%\bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
+	
+	%\bibliography{51-biblio}          % имя библиографической базы (bib-файла)
+
+	
+\end{document}
