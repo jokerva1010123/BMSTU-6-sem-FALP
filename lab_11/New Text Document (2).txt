@@ -1,0 +1,39 @@
+matrix([[0, 0, 0, 0], 
+       [0, 0, 1, 0], 
+       [0, 1, 0, 0], 
+       [1, 0, 0, 0]]).
+
+valid_move(Matrix, X, Y) :-
+    nth0(X, Matrix, Row), % Lấy hàng X
+    nth0(Y, Row, Value),
+    Value = 0.
+
+get_neighbors(Matrix, X, Y, Neighbors) :-
+    X1 is X - 1,
+    X2 is X + 1,
+    Y1 is Y - 1,
+    Y2 is Y + 1,
+    X3 is X + 2,
+    findall((I, J),
+            (between(X1, X2, I), between(Y1, Y2, J), ((I\=X, J=Y); (I=X, J\=Y)), valid_move(Matrix, I, J)),
+            Neighbor),
+	delete(Neighbor, (X2, Y), NewNeighbors),
+    ((valid_move(Matrix, X2, Y), valid_move(Matrix, X3, Y)) ->  append(NewNeighbors, [(X3, Y)], Neighbors);Neighbors = NewNeighbors).
+
+% Hàm duyệt đồ thị theo thuật toán BFS
+
+bfs(_, Queue, EndX, EndY, Visited, FinalPath):-
+    member((EndX, EndY), Visited),
+    member((EndX, EndY, Path), Queue),
+    FinalPath = Path, !. 
+
+bfs(Matrix, [(X, Y, Path)|Queue], EndX, EndY, Visited, FinalPath) :-
+    get_neighbors(Matrix, X, Y, Neighbors), % Lấy các ô kề của ô hiện tại
+    findall((X1, Y1, NewPath), (member((X1, Y1), Neighbors), \+member((X1, Y1), Visited), NewPath = [(X1, Y1)|Path]), New),
+  	append(Queue, New, NewQueue),
+    append(Visited, Neighbors, NewVisited),
+    bfs(Matrix, NewQueue, EndX, EndY, NewVisited, FinalPath).
+
+bfs_path(Matrix, StartX, StartY, EndX, EndY, Path) :-
+    bfs(Matrix, [(StartX, StartY, [(StartX, StartY)])], EndX, EndY, [(StartX, StartY)], ReversePath),
+    reverse(ReversePath,Path).

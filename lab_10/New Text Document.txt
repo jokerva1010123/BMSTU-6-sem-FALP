@@ -1,0 +1,25 @@
+predicates
+    factorial_or_is_factorial(integer, integer)
+    isfactorial(integer, integer, integer, integer )
+    factorial(integer, integer, integer, integer )
+clauses
+    factorial(Res, Cur, Res, Cur) :- !.
+    factorial(Res, Cur, Num, Prod):-
+    	Nextnum = Num + 1,
+    	Newprod = Prod * NextNum,
+    	factorial(Res, Cur, Nextnum, Newprod).
+    	
+    isfactorial(Res, Cur, Res, Cur) :- !.
+    isfactorial(Res, Cur, Num, Prod):-
+    	Nextnum = Num + 1,
+    	Newprod = Prod * NextNum,
+    	Cur >= NewProd,
+    	isfactorial(Res, Cur, Nextnum, Newprod).
+    	
+    factorial_or_is_factorial(N, F) :-
+   	free(N), isfactorial(N, F, 1, 1), !.
+   factorial_or_is_factorial(N, F) :-
+   	free(F), factorial(N, F, 1, 1), !.
+   
+goal
+    factorial_or_is_factorial(5, X).
